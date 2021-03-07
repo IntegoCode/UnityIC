@@ -34,18 +34,18 @@ namespace UnityIC
                 case FitType.Full:
                     if (differenceInSize > 1)
                     {
-                        Camera.main.orthographicSize = m_Sprite.bounds.size.y / 2;
+                        m_Camera.orthographicSize = m_Sprite.bounds.size.y / 2;
                     }
                     else
                     {
-                        Camera.main.orthographicSize = (m_Sprite.bounds.size.y / 2) * differenceInSize;
+                        m_Camera.orthographicSize = (m_Sprite.bounds.size.y / 2) * differenceInSize;
                     }
                     break;
                 case FitType.Horizontal:
-                    Camera.main.orthographicSize = (m_Sprite.bounds.size.y / 2) * differenceInSize;
+                    m_Camera.orthographicSize = (m_Sprite.bounds.size.y / 2) * differenceInSize;
                     break;
                 case FitType.Vertical:
-                    Camera.main.orthographicSize = m_Sprite.bounds.size.y / 2;
+                    m_Camera.orthographicSize = m_Sprite.bounds.size.y / 2;
                     break;
                 default:
                     break;

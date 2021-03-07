@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/projectSettingsUpdater.xml
+/modules.xml
+/.idea.UnityIC.iml
+# Datasource local storage ignored files
+/../../../../../../../../../:\Users\Andrey\Documents\GitHub\UnityIC\.idea\.idea.UnityIC\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
