@@ -5,11 +5,24 @@ using UnityEngine;
 
 namespace UnityIC
 {
-    public class Pool<T> where T : MonoBehaviour 
+    public enum PoolObjecState
+    {
+        Active = 0,
+        NotActive = 1,
+        All = 2,
+    }
+    
+    public class Pool<T> where T : Component 
     {
         private List<T> m_Objects = new List<T>();
 
         private Predicate<T> m_ActiveObjectCondition = item => item.gameObject.activeInHierarchy;
+
+        private bool m_AutoCreation = false;
+
+        private Action<T> m_ActionCreation = null;
+
+        private T m_OriginalObject = null;
 
         public Pool() { }
 
@@ -43,45 +56,55 @@ namespace UnityIC
 
             return this;
         }
+        
+        public Pool<T> SetAutoCreation(bool value)
+        {
+            m_AutoCreation = value;
 
-        public T GetObject(ObjecState state = ObjecState.NotActive)
+            return this;
+        }
+
+        public T GetObject(PoolObjecState state = PoolObjecState.NotActive)
         {
             T poolObject = null;
 
             switch (state)
             {
-                case ObjecState.Active:
-                    poolObject = m_Objects.Where(item => m_ActiveObjectCondition.Invoke(item)).FirstOrDefault();
+                case PoolObjecState.Active:
+                    poolObject = m_Objects.FirstOrDefault(item => m_ActiveObjectCondition.Invoke(item));
                     break;
-                case ObjecState.NotActive:
-                    poolObject = m_Objects.Where(item => !m_ActiveObjectCondition.Invoke(item)).FirstOrDefault();
+                case PoolObjecState.NotActive:
+                    poolObject = m_Objects.FirstOrDefault(item => !m_ActiveObjectCondition.Invoke(item));
+
+                    if (poolObject == null && m_AutoCreation)
+                    {
+                        Instantiate(m_OriginalObject, 1, m_ActionCreation);
+                        poolObject = m_Objects.FirstOrDefault(item => !m_ActiveObjectCondition.Invoke(item));
+                    }
+                    
                     break;
-                case ObjecState.All:
+                case PoolObjecState.All:
                     poolObject = m_Objects.FirstOrDefault();
-                    break;
-                default:
                     break;
             }
 
             return poolObject;
         }
 
-        public IEnumerable<T> GetObjects(ObjecState state = ObjecState.NotActive)
+        public IEnumerable<T> GetObjects(PoolObjecState state = PoolObjecState.NotActive)
         {
             IEnumerable<T> objects = null;
 
             switch (state)
             {
-                case ObjecState.Active:
+                case PoolObjecState.Active:
                     objects = m_Objects.Where(item => m_ActiveObjectCondition.Invoke(item));
                     break;
-                case ObjecState.NotActive:
+                case PoolObjecState.NotActive:
                     objects = m_Objects.Where(item => !m_ActiveObjectCondition.Invoke(item));
                     break;
-                case ObjecState.All:
+                case PoolObjecState.All:
                     objects = m_Objects;
-                    break;
-                default:
                     break;
             }
 
@@ -90,19 +113,14 @@ namespace UnityIC
 
         private void Instantiate(T originalObject, int number = 1, Action<T> action = null)
         {
+            (m_OriginalObject, m_ActionCreation) = (originalObject, action);
+
             for (int i = 0; i < number; i++)
             {
                 T newObject = UnityEngine.Object.Instantiate(originalObject);
                 action?.Invoke(newObject);
                 m_Objects.Add(newObject);
             }
-        }
-
-        public enum ObjecState
-        {
-            Active = 0,
-            NotActive = 1,
-            All = 2,
         }
     }
 }

@@ -58,7 +58,7 @@ namespace UnityIC
         public static event Action<DragNDrop2D> OnBeginDragStatic = null;
 
         public static event Action<DragNDrop2D> OnEndDragStatic = null;
-        
+
         public static event Action<DragNDrop2D> OnPointerUpStatic = null;
 
         private void OnValidate()
@@ -71,6 +71,11 @@ namespace UnityIC
 
         private void Awake()
         {
+            if (!m_Camera)
+            {
+                m_Camera = Camera.main;
+            }
+
             if (!DefaultPosition)
             {
                 DefaultPosition = new GameObject($"{gameObject.name} Default Position").transform;
@@ -179,7 +184,7 @@ namespace UnityIC
                 {
                     m_MovementCoroutine = StartCoroutine(Movement(Movements.ToDefault));
                 }
-                
+
                 OnPointerUpEvent?.Invoke(this);
                 OnPointerUpStatic?.Invoke(this);
             }
